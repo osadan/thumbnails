@@ -1,0 +1,12 @@
+{
+  "name": "thumbnails",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm start --prefix server &  npm start --prefix client &",
+    "postinstall": "npm install --prefix server & npm install --prefix client"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -3,6 +3,9 @@ import { Router, ReactLocation } from 'react-location'
 import styled from 'styled-components'
 const location = new ReactLocation();
 
+const path = 'https://thumbnail-6wvmdlo5cq-uc.a.run.app';
+const localPath = 'http://localhost:3001'
+
 
 function FileUploadPage() {
   const [selectedFile, setSelectedFile] = useState();
@@ -10,7 +13,7 @@ function FileUploadPage() {
 
   const changeHandler = (event) => {
     const file = event.target.files[0];
-    if (file.type.startsWith('image/')) {
+    /* if (file.type.startsWith('image/')) {
 
 
       const img = document.getElementById("preview");
@@ -19,7 +22,7 @@ function FileUploadPage() {
       const reader = new FileReader();
       reader.onload = (function (aImg) { return function (e) { aImg.src = e.target.result; }; })(img);
       reader.readAsDataURL(file);
-    }
+    } */
     setSelectedFile(event.target.files[0]);
     setIsSelected(true);
   };
@@ -31,7 +34,7 @@ function FileUploadPage() {
 
 
     fetch(
-      'http://localhost:3001/upload',
+      `${localPath}/upload`,
       {
         method: 'POST',
         body: formData,
@@ -40,11 +43,41 @@ function FileUploadPage() {
       .then((response) => response.json())
       .then((result) => {
         console.log('Success:', result);
+        const img = document.getElementById("preview");
+        img.src = result.data.externalPath;
+        setIsSelected(true);
+
       })
       .catch((error) => {
         console.error('Error:', error);
       });
   };
+
+  const handleGenerate = () => {
+    const formData = new FormData();
+
+    formData.append('File', selectedFile);
+
+
+    fetch(
+      `${localPath}/generate`,
+      {
+        method: 'POST',
+        body: formData,
+      }
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        console.log('Success:', result);
+        const img = document.getElementById("preview");
+        img.src = result.data.base64;
+        setIsSelected(true);
+
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 
 
   return (
@@ -67,7 +100,8 @@ function FileUploadPage() {
       )}
       <ImgPreview id='preview' ></ImgPreview>
       <div>
-        <button onClick={handleSubmission}>Submit</button>
+        <button onClick={handleSubmission}>Upload</button>
+        <button onClick={handleGenerate}>Generate</button>
       </div>
 
 

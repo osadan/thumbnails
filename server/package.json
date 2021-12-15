@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon index.js"
+    "start": "node index.js",
+    "start:watch": "npx nodemon index.js "
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^5.16.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-fileupload": "^1.2.1"
+    "express-fileupload": "^1.2.1",
+    "loglevel": "^1.8.0",
+    "natural-filename-generator": "^1.0.0"
   }
 }

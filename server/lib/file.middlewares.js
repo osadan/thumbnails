@@ -1,5 +1,6 @@
 
 const path = require('path');
+const { promises: fs } = require('fs');
 const logger = require('loglevel');
 const filepreview = require('./filepreview.js')
 const NaturalNameGenerator = require('natural-filename-generator');
@@ -20,15 +21,16 @@ const fileExistsMiddleware = (req, res, next) => {
 
 const createThumbnail = async (file, thumbnailOptions = {}) => {
   const { INIT_CWD } = process.env;
-  console.log("INIT_CWD", INIT_CWD)
   const naturalNameGenerator = new NaturalNameGenerator();
   const extName = path.extname(file.name).toLowerCase().replace('.', '');
   const tmpFileName = naturalNameGenerator.generate(extName); //to avoid collisions 
   logger.log('tmp file name created', tmpFileName);
   const uploadPath = INIT_CWD + '/files/' + tmpFileName;
-  const tmp = await file.mv(uploadPath);
+  logger.log("uploadPathName", uploadPath)
+  await file.mv(uploadPath);
 
-  //logger.log('return of file.mv', tmp)
+
+
   const options = {
     width: 300,
     height: 200,
@@ -39,19 +41,33 @@ const createThumbnail = async (file, thumbnailOptions = {}) => {
     pdf_path: path.resolve("files", "pdfs"),
     ...thumbnailOptions
   }
-
   const outPath = path.resolve("files", "thumbnail", "", `${tmpFileName.replace(/\.[^/.]+$/, "")}.png`);
 
   const result = filepreview.generateSync(uploadPath, outPath, options)
   logger.log('file is generated', uploadPath)
   if (!result) {
-    throw new Error('file was not generated')
+    throw new Error('file was not generated ' + uploadPath)
   }
   return { thumbnailPath: outPath, tmpFileName };
 }
 
+const clearFiles = async (filesPath) => {
+  const files = await fs.readdir(filesPath, {})
+  for (const file of files) {
+    const filePath = path.join(filesPath, file);
+    const fileStat = await fs.stat(filePath);
+    if (!fileStat.isDirectory()) {
+      await fs.unlink(filePath);
+    } else {
+      await clearFiles(filePath)
+    }
+  }
+}
+
+
 
 module.exports = {
   fileExistsMiddleware,
-  createThumbnail
+  createThumbnail,
+  clearFiles
 }

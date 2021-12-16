@@ -8,5 +8,9 @@
     "postinstall": "npm install --prefix server & npm install --prefix client"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "node-cron": "^3.0.0"
+  }
 }

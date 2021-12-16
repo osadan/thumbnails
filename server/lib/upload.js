@@ -1,16 +1,14 @@
 
 const { Storage } = require('@google-cloud/storage')
-const GOOGLE_CLOUD_PROJECT_ID = 'freightos-lh-test'; // Replace with your project ID
-const GOOGLE_CLOUD_KEYFILE = './freightos-lh-test-25fa963b1586.json'; // Replace with the path to the downloaded private key
 const path = require('path');
 const logger = require('loglevel');
 
 const storage = new Storage({
-  projectId: GOOGLE_CLOUD_PROJECT_ID,
-  keyFilename: GOOGLE_CLOUD_KEYFILE,
+  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+  keyFilename: process.env.GOOGLE_CLOUD_KEYFILE
 });
 
-exports.getPublicUrl = (bucketName, fileName) => `https://storage.googleapis.com/${bucketName}/${fileName}`;
+exports.getPublicUrl = (bucketName, fileName) => `${process.env.PUBLIC_URL}/${bucketName}/${fileName}`;
 
 
 /**
@@ -38,7 +36,7 @@ exports.copyFileToGCS = (localFilePath, bucketName, options) => {
     }))
     .then(() => exports.getPublicUrl(bucketName, fileName))
     .catch(error => {
-      console.log(error, 'copyFileToGCS');
+      console.error(error, 'copyFileToGCS');
       throw error;
     })
     ;
